@@ -188,10 +188,16 @@ export default function Home() {
 
               {/* Logo */}
               <a href="#home" className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#f7c873] text-2xl shadow-lg">
+                {/* <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#f7c873] text-2xl shadow-lg">
                   🧇
-                </div>
-
+                </div> */}
+                
+                  <Image 
+                  src={"/logo.jpg"}
+                  alt="logo"
+                  width={40}
+                  height={40}
+                  />
                 <div>
                   <div className="font-serif text-lg font-bold leading-none text-white">
                     Huffle
@@ -900,7 +906,7 @@ export default function Home() {
                 {/* <MessageCircle size={18} /> */}
                 <Image 
                   src={"/instagram.svg"}
-                  alt="Picture of the author" 
+                  alt="instagram icon" 
                   width={20}
                   height={20}
                   /> 
