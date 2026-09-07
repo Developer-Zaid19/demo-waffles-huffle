@@ -17,8 +17,7 @@ import {
     Truck,
 } from "lucide-react";
 
-import { cakes } from "@/app/data/cakes";
-import { useCart } from "@/components/CartProvider";
+import products from "../data/products";
 
 const weights = [
     {
@@ -46,12 +45,11 @@ const flavors = [
     "Butterscotch",
 ];
 
-export default function CakeDetailsPage() {
+export default function waffleDetailsPage() {
     const params = useParams();
-    const { addItem } = useCart();
 
-    const cake = useMemo(() => {
-        return cakes.find((item) => String(item.id) === String(params.id));
+    const waffle = useMemo(() => {
+        return products.find((item) => String(item.slug) === String(params.id));
     }, [params.id]);
 
     const [selectedWeight, setSelectedWeight] = useState(weights[1]);
@@ -61,7 +59,7 @@ export default function CakeDetailsPage() {
     const [liked, setLiked] = useState(false);
     const [activeImage, setActiveImage] = useState(0);
 
-    if (!cake) {
+    if (!waffle) {
         return (
             <main className="min-h-screen bg-[var(--background)]">
                 <div className="container-main flex min-h-[70vh] items-center justify-center">
@@ -74,20 +72,20 @@ export default function CakeDetailsPage() {
                         </div>
 
                         <h1 className="mt-5 text-2xl font-bold text-[var(--heading)]">
-                            Cake not found
+                            waffle not found
                         </h1>
 
                         <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                            The cake you're looking for may have been removed or the link
+                            The waffle you're looking for may have been removed or the link
                             might be incorrect.
                         </p>
 
                         <Link
-                            href="/cakes"
+                            href="/products"
                             className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--primary-dark)]"
                         >
                             <ArrowLeft size={17} />
-                            Browse All Cakes
+                            Browse All products
                         </Link>
                     </div>
                 </div>
@@ -96,11 +94,11 @@ export default function CakeDetailsPage() {
     }
 
     const finalPrice = Math.round(
-        cake.price * selectedWeight.multiplier
+        waffle.price * selectedWeight.multiplier
     );
 
     const finalOldPrice = Math.round(
-        cake.oldPrice * selectedWeight.multiplier
+        waffle.oldPrice * selectedWeight.multiplier
     );
 
     const discount = Math.round(
@@ -108,9 +106,9 @@ export default function CakeDetailsPage() {
     );
 
     const galleryImages = [
-        cake.image,
-        cake.image,
-        cake.image,
+        waffle.image,
+        waffle.image,
+        waffle.image,
     ];
 
     const increaseQuantity = () => {
@@ -121,7 +119,7 @@ export default function CakeDetailsPage() {
         setQuantity((current) => Math.max(1, current - 1));
     };
 
-    const addToCart = () => addItem(cake, quantity, {
+    const addToCart = () => addItem(waffle, quantity, {
         weight: selectedWeight.label,
         flavor: selectedFlavor,
         message,
@@ -148,20 +146,8 @@ export default function CakeDetailsPage() {
                             className="shrink-0 text-[var(--muted)]"
                         />
 
-                        <Link
-                            href="/cakes"
-                            className="text-[var(--muted)] transition hover:text-[var(--primary)]"
-                        >
-                            Cakes
-                        </Link>
-
-                        <ChevronRight
-                            size={15}
-                            className="shrink-0 text-[var(--muted)]"
-                        />
-
                         <span className="max-w-[220px] truncate font-medium text-[var(--heading)]">
-                            {cake.name}
+                            {waffle.name}
                         </span>
                     </div>
                 </div>
@@ -180,13 +166,13 @@ export default function CakeDetailsPage() {
                             <div className="relative aspect-square overflow-hidden rounded-[var(--radius-large)] bg-[var(--section-soft)]">
                                 <img
                                     src={galleryImages[activeImage]}
-                                    alt={cake.name}
+                                    alt={waffle.name}
                                     className="h-full w-full object-cover"
                                 />
 
-                                {cake.badge && (
+                                {waffle.badge && (
                                     <span className="absolute left-5 top-5 rounded-full bg-white/95 px-4 py-2 text-xs font-bold text-[var(--primary)] shadow-sm backdrop-blur">
-                                        {cake.badge}
+                                        {waffle.badge}
                                     </span>
                                 )}
 
@@ -225,7 +211,7 @@ export default function CakeDetailsPage() {
                                     >
                                         <img
                                             src={image}
-                                            alt={`${cake.name} view ${index + 1}`}
+                                            alt={`${waffle.name} view ${index + 1}`}
                                             className="h-full w-full object-cover"
                                         />
                                     </button>
@@ -238,11 +224,11 @@ export default function CakeDetailsPage() {
             ================================================= */}
                         <div className="flex flex-col">
                             <span className="section-label">
-                                {cake.category}
+                                {waffle.category}
                             </span>
 
                             <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-[var(--heading)] sm:text-4xl">
-                                {cake.name}
+                                {waffle.name}
                             </h1>
 
                             {/* Rating */}
@@ -254,12 +240,12 @@ export default function CakeDetailsPage() {
                                     />
 
                                     <span className="text-sm font-bold text-[var(--heading)]">
-                                        {cake.rating}
+                                        {waffle.rating}
                                     </span>
                                 </div>
 
                                 <span className="text-sm text-[var(--muted)]">
-                                    {cake.reviews} verified reviews
+                                    {waffle.reviews} verified reviews
                                 </span>
 
                                 <span className="h-1 w-1 rounded-full bg-[var(--border)]" />
@@ -503,10 +489,10 @@ export default function CakeDetailsPage() {
                                 </h2>
 
                                 <p className="mt-5 max-w-3xl text-sm leading-7 text-[var(--muted)] sm:text-base">
-                                    Our cakes are freshly prepared using carefully selected
+                                    Our products are freshly prepared using carefully selected
                                     ingredients and crafted with attention to every detail.
                                     Whether you're celebrating a birthday, anniversary or just
-                                    treating yourself, this cake is made to make the moment a
+                                    treating yourself, this waffle is made to make the moment a
                                     little sweeter.
                                 </p>
 
@@ -539,7 +525,7 @@ export default function CakeDetailsPage() {
                             {/* Quick Info */}
                             <div className="rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--section-soft)] p-6">
                                 <h3 className="text-lg font-bold text-[var(--heading)]">
-                                    Cake information
+                                    waffle information
                                 </h3>
 
                                 <div className="mt-5 divide-y divide-[var(--border)]">
@@ -549,7 +535,7 @@ export default function CakeDetailsPage() {
                                         </span>
 
                                         <span className="font-semibold text-[var(--heading)]">
-                                            {cake.category}
+                                            {waffle.category}
                                         </span>
                                     </div>
 
@@ -588,7 +574,7 @@ export default function CakeDetailsPage() {
                     </div>
 
                     {/* =====================================================
-              RELATED CAKES
+              RELATED products
           ===================================================== */}
                     <div className="mt-20 border-t border-[var(--border)] pt-14">
                         <div className="flex items-end justify-between gap-5">
@@ -598,12 +584,12 @@ export default function CakeDetailsPage() {
                                 </span>
 
                                 <h2 className="section-title">
-                                    More delicious <span>cakes</span>
+                                    More delicious <span>products</span>
                                 </h2>
                             </div>
 
                             <Link
-                                href="/cakes"
+                                href="/products"
                                 className="hidden text-sm font-semibold text-[var(--primary)] sm:flex sm:items-center sm:gap-1"
                             >
                                 View all
@@ -612,12 +598,12 @@ export default function CakeDetailsPage() {
                         </div>
 
                         <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                            {cakes
-                                .filter((item) => item.id !== cake.id)
+                            {products
+                                .filter((item) => item.id !== waffle.id)
                                 .slice(0, 4)
                                 .map((item) => (
                                     <Link
-                                        href={`/cakes/${item.id}`}
+                                        href={`/products/${item.id}`}
                                         key={item.id}
                                         className="group overflow-hidden rounded-[var(--radius-card)] border border-[var(--border)] bg-white transition hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(45,32,34,0.10)]"
                                     >

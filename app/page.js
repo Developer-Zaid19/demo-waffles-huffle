@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import products from "./data/products";
+import Link from "next/link";
 import {
   ArrowRight,
   ChevronRight,
@@ -19,109 +21,16 @@ import {
   Zap,
 } from "lucide-react";
 
-/* =========================================================
-   CONFIG
-========================================================= */
 
 const WHATSAPP_NUMBER = "917081898098";
 
-// Paste Huffle Waffles' Google Maps URL here.
 const MAP_URL = "https://maps.app.goo.gl/YEC1ecJitVjxTfWx8";
 
 const INSTAGRAM_URL = "https://www.instagram.com/hufflewaffles.87/";
 
-/* =========================================================
-   DATA
-========================================================= */
 
 const categories = ["All", "Waffles", "Combos", "Drinks"];
 
-const products = [
-  {
-    id: 1,
-    name: "Classic Chocolate",
-    category: "Waffles",
-    price: 129,
-    oldPrice: 159,
-    tag: "Bestseller",
-    emoji: "🍫",
-    description: "Crispy golden waffle loaded with rich chocolate.",
-  },
-  {
-    id: 2,
-    name: "Oreo Crunch",
-    category: "Waffles",
-    price: 149,
-    oldPrice: 179,
-    tag: "Popular",
-    emoji: "🍪",
-    description: "Chocolate waffle topped with Oreo crunch.",
-  },
-  {
-    id: 3,
-    name: "Belgian Delight",
-    category: "Waffles",
-    price: 169,
-    oldPrice: 199,
-    tag: "Chef's Pick",
-    emoji: "🧇",
-    description: "Belgian-style waffle with creamy chocolate drizzle.",
-  },
-  {
-    id: 4,
-    name: "Nutella Dream",
-    category: "Waffles",
-    price: 179,
-    oldPrice: 219,
-    tag: "Premium",
-    emoji: "🍓",
-    description: "Rich chocolate spread with fresh fruity topping.",
-  },
-  {
-    id: 5,
-    name: "Waffle + Shake",
-    category: "Combos",
-    price: 219,
-    oldPrice: 259,
-    tag: "Combo",
-    emoji: "🥤",
-    description: "Your favourite waffle paired with a chilled shake.",
-  },
-  {
-    id: 6,
-    name: "Sweet Duo",
-    category: "Combos",
-    price: 249,
-    oldPrice: 299,
-    tag: "For Two",
-    emoji: "🧇",
-    description: "Two delicious waffles made for sharing.",
-  },
-  {
-    id: 7,
-    name: "Chocolate Shake",
-    category: "Drinks",
-    price: 99,
-    oldPrice: 119,
-    tag: "Fresh",
-    emoji: "🥛",
-    description: "Thick, creamy and seriously chocolatey.",
-  },
-  {
-    id: 8,
-    name: "Cold Coffee",
-    category: "Drinks",
-    price: 89,
-    oldPrice: 109,
-    tag: "Chilled",
-    emoji: "☕",
-    description: "Smooth chilled coffee for the perfect pairing.",
-  },
-];
-
-/* =========================================================
-   HELPERS
-========================================================= */
 
 function formatPrice(price) {
   return `₹${price}`;
@@ -191,13 +100,13 @@ export default function Home() {
                 {/* <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#f7c873] text-2xl shadow-lg">
                   🧇
                 </div> */}
-                
-                  <Image 
+
+                <Image
                   src={"/logo.jpg"}
                   alt="logo"
                   width={40}
                   height={40}
-                  />
+                />
                 <div>
                   <div className="font-serif text-lg font-bold leading-none text-white">
                     Huffle
@@ -321,6 +230,43 @@ export default function Home() {
               Freshly made waffles, delicious toppings and sweet little
               moments. Come hungry. Leave happy.
             </p>
+
+            <div className="flex items-center gap-5 mt-5">
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-(--newtext) bg-(--foreground) text-[#2a1b14] transition hover:bg-[#2a1b14] hover:text-white"
+              >
+                <Image
+                  src={"/instagram-hero.svg"}
+                  alt="instagram icon"
+                  width={20}
+                  height={20}
+                />
+              </a>
+
+              <button
+                onClick={openWhatsApp}
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-(--newtext) bg-(--foreground) text-(--newtext) transition hover:bg-[#2a1b14] hover:text-white"
+              >
+                <Image
+                  src={"/whatsapp.svg"}
+                  alt="instagram icon"
+                  width={20}
+                  height={20}
+                />
+              </button>
+
+              <a
+                href={MAP_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-(--newtext) bg-(--foreground) text-(--newtext) transition hover:bg-[#2a1b14] hover:text-white"
+              >
+                <MapPin size={18} />
+              </a>
+            </div>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <a
@@ -451,6 +397,18 @@ export default function Home() {
           <span>✦</span>
           <span>Made With Love</span>
           <span>✦</span>
+          <span>Fresh Waffles</span>
+          <span>✦</span>
+          <span>Made With Love</span>
+          <span>✦</span>
+          <span>Chocolate Dreams</span>
+          <span>✦</span>
+          <span>Sweet Moments</span>
+          <span>✦</span>
+          <span>Fresh Waffles</span>
+          <span>✦</span>
+          <span>Made With Love</span>
+          <span>✦</span>
         </div>
       </div>
 
@@ -504,8 +462,8 @@ export default function Home() {
                   key={category}
                   onClick={() => setActiveCategory(category)}
                   className={`whitespace-nowrap rounded-xl px-5 py-3 text-sm font-bold transition ${activeCategory === category
-                      ? "bg-[#2a1b14] text-white shadow-lg"
-                      : "border border-[#eadbcb] bg-white text-[#6f594d] hover:border-[#c9a17c]"
+                    ? "bg-[#2a1b14] text-white shadow-lg"
+                    : "border border-[#eadbcb] bg-white text-[#6f594d] hover:border-[#c9a17c]"
                     }`}
                 >
                   {category}
@@ -522,21 +480,33 @@ export default function Home() {
                 className="group overflow-hidden rounded-[28px] border border-[#eadbcb] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#5b3018]/10"
               >
                 {/* Product visual */}
-                <div className="relative flex h-56 items-center justify-center overflow-hidden bg-[#f5e4ce]">
+                <Link className="relative flex h-56 items-center justify-center overflow-hidden bg-[#f5e4ce]"
+                  href={`/${product.slug}`}
+                >
 
                   <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[#e2b77b]/30 blur-2xl" />
 
-                  <div className="relative flex h-40 w-40 rotate-[-6deg] items-center justify-center rounded-[32px] bg-[#a95f2c] text-7xl shadow-2xl transition duration-500 group-hover:rotate-0 group-hover:scale-105">
-                    {product.emoji}
-                  </div>
-
+                  <img className="relative flex h-full w-full  items-center justify-center bg-[#a95f2c] text-7xl shadow-2xl transition duration-500 group-hover:scale-105"
+                    src={product.image}
+                    alt={`${product.name} image`}
+                    width={50}
+                    height={50}
+                  />
+                  {/* <img className="relative flex h-40 w-40 rotate-[-6deg] items-center justify-center rounded-[32px] bg-[#a95f2c] text-7xl shadow-2xl transition duration-500 group-hover:rotate-0 group-hover:scale-105"
+                  src={product.image}
+                  alt={`${product.name} image`}
+                  width={50}
+                  height={50}
+                  />                                   */}
                   <div className="absolute left-4 top-4 rounded-full bg-[#2a1b14] px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-[#f7c873]">
                     {product.tag}
                   </div>
-                </div>
+                </Link>
 
                 <div className="p-5">
-                  <div className="flex items-start justify-between gap-3">
+                  <Link className="flex items-start justify-between gap-3"
+                    href={`/${product.slug}`}
+                  >
                     <div>
                       <h3 className="font-serif text-xl font-bold text-[#2a1b14]">
                         {product.name}
@@ -546,7 +516,7 @@ export default function Home() {
                         {product.description}
                       </p>
                     </div>
-                  </div>
+                  </Link>
 
                   <div className="mt-5 flex items-center justify-between">
                     <div>
@@ -816,7 +786,7 @@ export default function Home() {
                         Our Location
                       </div>
                       <div className="mt-1 text-xs leading-5 text-white/45">
-                        Tap below to open Google Maps
+                        Akbari Gate, Hakim Abdul Aziz Rd, Chowk, Lucknow, Uttar Pradesh 226003
                       </div>
                     </div>
                   </div>
@@ -831,7 +801,7 @@ export default function Home() {
                         Opening Hours
                       </div>
                       <div className="mt-1 text-xs leading-5 text-white/45">
-                        Update with actual stall timings
+                        Everyday 6:00 PM to 2:00 AM
                       </div>
                     </div>
                   </div>
@@ -849,7 +819,10 @@ export default function Home() {
               </div>
 
               {/* Map placeholder */}
-              <div className="relative min-h-[360px] overflow-hidden bg-[#33221a]">
+              <a className="relative min-h-[360px] overflow-hidden bg-[#33221a]"
+                href={MAP_URL}
+                target="_blank"
+                rel="noreferrer">
                 <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:50px_50px]" />
 
                 <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center">
@@ -862,10 +835,10 @@ export default function Home() {
                   </div>
 
                   <div className="mt-1 text-xs text-white/45">
-                    Your sweet spot
+                    Akbari Gate, Hakim Abdul Aziz Rd, Chowk, Lucknow, Uttar Pradesh 226003
                   </div>
                 </div>
-              </div>
+              </a>
 
             </div>
           </div>
@@ -904,12 +877,12 @@ export default function Home() {
                 className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#eadbcb] bg-white text-[#2a1b14] transition hover:bg-[#2a1b14] hover:text-white"
               >
                 {/* <MessageCircle size={18} /> */}
-                <Image 
+                <Image
                   src={"/instagram.svg"}
-                  alt="instagram icon" 
+                  alt="instagram icon"
                   width={20}
                   height={20}
-                  /> 
+                />
               </a>
 
               <button
