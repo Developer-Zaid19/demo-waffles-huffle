@@ -351,7 +351,7 @@ export default function Home() {
             </div>
 
             {/* Floating card */}
-            <div className="absolute -bottom-5 -left-3 rounded-2xl border border-white/40 bg-white/90 p-4 shadow-2xl backdrop-blur sm:-left-8">
+            <div className="hero-made-fresh-badge absolute -bottom-5 -left-3 rounded-2xl border border-white/40 bg-white/90 p-4 shadow-2xl backdrop-blur sm:-left-8">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#f7c873] text-xl">
                   🧇
@@ -370,7 +370,7 @@ export default function Home() {
             </div>
 
             {/* Floating badge */}
-            <div className="absolute -right-2 top-8 flex h-20 w-20 rotate-12 items-center justify-center rounded-full border-4 border-[#21150f] bg-[#f7c873] text-center text-[10px] font-black uppercase leading-3 text-[#2a1b14] shadow-xl sm:-right-8">
+            <div className="hero-crispy-badge absolute -right-2 top-8 flex h-20 w-20 rotate-12 items-center justify-center rounded-full border-4 border-[#21150f] bg-[#f7c873] text-center text-[10px] font-black uppercase leading-3 text-[#2a1b14] shadow-xl sm:-right-8">
               Crispy
               <br />
               & Fresh
