@@ -5,87 +5,57 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
     ArrowLeft,
-    Check,
+    ChevronLeft,
     ChevronRight,
-    Clock3,
-    Heart,
-    Minus,
-    Plus,
-    ShieldCheck,
+    MessageCircle,
     ShoppingBag,
-    Star,
-    Truck,
+    Sparkles,
 } from "lucide-react";
 
 import products from "../data/products";
 
-const weights = [
-    {
-        label: "0.5 kg",
-        multiplier: 0.7,
-    },
-    {
-        label: "1 kg",
-        multiplier: 1,
-    },
-    {
-        label: "1.5 kg",
-        multiplier: 1.45,
-    },
-    {
-        label: "2 kg",
-        multiplier: 1.85,
-    },
-];
-
-const flavors = [
-    "Chocolate",
-    "Vanilla",
-    "Strawberry",
-    "Butterscotch",
-];
-
-export default function waffleDetailsPage() {
+export default function WaffleDetailsPage() {
     const params = useParams();
+    const [activeImage, setActiveImage] = useState(0);
 
     const waffle = useMemo(() => {
-        return products.find((item) => String(item.slug) === String(params.id));
+        return products.find(
+            (item) => String(item.slug) === String(params.id)
+        );
     }, [params.id]);
 
-    const [selectedWeight, setSelectedWeight] = useState(weights[1]);
-    const [selectedFlavor, setSelectedFlavor] = useState("Chocolate");
-    const [quantity, setQuantity] = useState(1);
-    const [message, setMessage] = useState("");
-    const [liked, setLiked] = useState(false);
-    const [activeImage, setActiveImage] = useState(0);
+    /* ---------------------------------
+       PRODUCT NOT FOUND
+    --------------------------------- */
 
     if (!waffle) {
         return (
-            <main className="min-h-screen bg-[var(--background)]">
-                <div className="container-main flex min-h-[70vh] items-center justify-center">
-                    <div className="max-w-md text-center">
-                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[var(--primary-soft)]">
+            <main className="min-h-screen bg-[#fffaf4] px-5">
+                <div className="flex min-h-screen items-center justify-center">
+                    <div className="w-full max-w-md text-center">
+                        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[28px] bg-[#f7c873]/20">
                             <ShoppingBag
-                                size={26}
-                                className="text-[var(--primary)]"
+                                size={30}
+                                strokeWidth={1.8}
+                                className="text-[#a86f42]"
                             />
                         </div>
 
-                        <h1 className="mt-5 text-2xl font-bold text-[var(--heading)]">
-                            waffle not found
+                        <h1 className="mt-6 text-3xl font-bold tracking-tight text-[#2a1b14]">
+                            Waffle Not Found
                         </h1>
 
-                        <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                            The waffle you're looking for may have been removed or the link
-                            might be incorrect.
+                        <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-[#765f52]">
+                            The waffle you're looking for may have been removed
+                            or the link might be incorrect.
                         </p>
 
                         <Link
-                            href="/products"
-                            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[var(--primary-dark)]"
+                            href="/"
+                            className="mx-auto mt-7 inline-flex h-12 items-center gap-2 rounded-2xl bg-[#a86f42] px-6 text-sm font-bold text-white shadow-[0_12px_30px_rgba(168,111,66,0.22)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#8f5d35]"
                         >
                             <ArrowLeft size={17} />
-                            Browse All products
+                            Back to Menu
                         </Link>
                     </div>
                 </div>
@@ -93,557 +63,326 @@ export default function waffleDetailsPage() {
         );
     }
 
-    const finalPrice = Math.round(
-        waffle.price * selectedWeight.multiplier
-    );
+    /* ---------------------------------
+       GALLERY
+    --------------------------------- */
 
-    const finalOldPrice = Math.round(
-        waffle.oldPrice * selectedWeight.multiplier
-    );
+    const galleryImages =
+        waffle.imagesarr && waffle.imagesarr.length > 0
+            ? waffle.imagesarr
+            : [waffle.image];
 
-    const discount = Math.round(
-        ((finalOldPrice - finalPrice) / finalOldPrice) * 100
-    );
-
-    const galleryImages = [
-        waffle.image,
-        waffle.image,
-        waffle.image,
-    ];
-
-    const increaseQuantity = () => {
-        setQuantity((current) => current + 1);
+    const nextImage = () => {
+        setActiveImage((current) =>
+            current === galleryImages.length - 1 ? 0 : current + 1
+        );
     };
 
-    const decreaseQuantity = () => {
-        setQuantity((current) => Math.max(1, current - 1));
+    const previousImage = () => {
+        setActiveImage((current) =>
+            current === 0 ? galleryImages.length - 1 : current - 1
+        );
     };
 
-    const addToCart = () => addItem(waffle, quantity, {
-        weight: selectedWeight.label,
-        flavor: selectedFlavor,
-        message,
-        price: finalPrice,
-    });
+    /* ---------------------------------
+       WHATSAPP ORDER
+    --------------------------------- */
+
+    const handleWhatsAppOrder = () => {
+        const phoneNumber = "917081898098";
+
+        const message = `Hi Huffle Waffles! I would like to order ${waffle.name} for ₹${waffle.price}.`;
+
+        const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+            message
+        )}`;
+
+        window.open(whatsappURL, "_blank");
+    };
+
+    const discount =
+        waffle.oldPrice && waffle.oldPrice > waffle.price
+            ? Math.round(
+                ((waffle.oldPrice - waffle.price) / waffle.oldPrice) * 100
+            )
+            : null;
 
     return (
-        <main className="min-h-screen bg-[var(--background)]">
-            {/* =====================================================
-          BREADCRUMB
-      ===================================================== */}
-            <div className="border-b border-[var(--border)] bg-white">
-                <div className="container-main">
-                    <div className="flex h-14 items-center gap-2 overflow-x-auto whitespace-nowrap text-sm">
-                        <Link
-                            href="/"
-                            className="text-[var(--muted)] transition hover:text-[var(--primary)]"
-                        >
-                            Home
-                        </Link>
+        <main className="min-h-screen overflow-x-hidden bg-[#fffaf4] text-[#2a1b14] font-serif">
+            {/* =========================================
+                TOP NAVIGATION
+            ========================================= */}
 
-                        <ChevronRight
-                            size={15}
-                            className="shrink-0 text-[var(--muted)]"
-                        />
-
-                        <span className="max-w-[220px] truncate font-medium text-[var(--heading)]">
-                            {waffle.name}
+            <header className="sticky top-0 z-30 border-b border-[#eadfd6] bg-[#fffaf4]/90 backdrop-blur-xl">
+                <div className="mx-auto flex h-16 w-full max-w-7xl items-center px-5 sm:px-8 lg:px-10">
+                    <Link
+                        href="/"
+                        className="group inline-flex items-center gap-2 rounded-xl py-2 pr-4 text-sm font-semibold text-[#765f52] transition hover:text-[#a86f42]"
+                    >
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#eadfd6] bg-white transition group-hover:border-[#c8a98d] group-hover:bg-[#fff8ef]">
+                            <ArrowLeft size={16} />
                         </span>
+
+                        <span>Back to Menu</span>
+                    </Link>
+
+                    <div className="ml-auto hidden items-center gap-2 text-xs font-medium text-[#9b8170] sm:flex">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#8fbf83]" />
+                        Freshly made to order
                     </div>
                 </div>
-            </div>
+            </header>
 
-            {/* =====================================================
-          PRODUCT DETAILS
-      ===================================================== */}
-            <section className="section-padding">
-                <div className="container-main">
-                    <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
-                        {/* =================================================
-                LEFT: PRODUCT IMAGES
-            ================================================= */}
-                        <div>
-                            <div className="relative aspect-square overflow-hidden rounded-[var(--radius-large)] bg-[var(--section-soft)]">
-                                <img
-                                    src={galleryImages[activeImage]}
-                                    alt={waffle.name}
-                                    className="h-full w-full object-cover"
-                                />
+            {/* =========================================
+                PRODUCT SECTION
+            ========================================= */}
 
-                                {waffle.badge && (
-                                    <span className="absolute left-5 top-5 rounded-full bg-white/95 px-4 py-2 text-xs font-bold text-[var(--primary)] shadow-sm backdrop-blur">
-                                        {waffle.badge}
-                                    </span>
-                                )}
+            <section className="relative">
+                {/* Soft decorative background */}
+                <div className="pointer-events-none absolute left-[-140px] top-20 h-72 w-72 rounded-full bg-[#f7c873]/10 blur-3xl" />
+                <div className="pointer-events-none absolute right-[-160px] top-[35%] h-80 w-80 rounded-full bg-[#dca67a]/10 blur-3xl" />
 
-                                <button
-                                    type="button"
-                                    onClick={() => setLiked(!liked)}
-                                    aria-label={
-                                        liked
-                                            ? "Remove from wishlist"
-                                            : "Add to wishlist"
-                                    }
-                                    className="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full bg-white/95 shadow-sm backdrop-blur transition hover:scale-105"
-                                >
-                                    <Heart
-                                        size={19}
-                                        className={
-                                            liked
-                                                ? "fill-[var(--primary)] text-[var(--primary)]"
-                                                : "text-[var(--heading)]"
-                                        }
+                <div className="relative mx-auto w-full max-w-7xl px-5 py-8 sm:px-8 sm:py-12 lg:px-10 lg:py-16">
+                    <div className="grid gap-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(380px,0.92fr)] lg:items-start lg:gap-16 xl:gap-20">
+                        {/* =====================================
+                            IMAGE GALLERY
+                        ===================================== */}
+
+                        <div className="w-full">
+                            <div className="lg:sticky lg:top-24">
+                                {/* Main image */}
+
+                                <div className="group relative aspect-square w-full overflow-hidden rounded-[30px] border border-[#eadfd6] bg-[#f5eadf] shadow-[0_20px_60px_rgba(91,55,35,0.10)] sm:rounded-[36px]">
+                                    <img
+                                        src={galleryImages[activeImage]}
+                                        alt={waffle.name}
+                                        className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.025]"
                                     />
-                                </button>
-                            </div>
 
-                            {/* Thumbnails */}
-                            <div className="mt-4 grid grid-cols-3 gap-3">
-                                {galleryImages.map((image, index) => (
-                                    <button
-                                        key={index}
-                                        type="button"
-                                        onClick={() => setActiveImage(index)}
-                                        className={`aspect-square overflow-hidden rounded-2xl border-2 bg-[var(--section-soft)] transition ${activeImage === index
-                                                ? "border-[var(--primary)]"
-                                                : "border-transparent"
-                                            }`}
-                                    >
-                                        <img
-                                            src={image}
-                                            alt={`${waffle.name} view ${index + 1}`}
-                                            className="h-full w-full object-cover"
-                                        />
-                                    </button>
-                                ))}
+                                    {/* Image overlay */}
+                                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/10" />
+
+                                    {/* Product badge */}
+                                    {waffle.tag && (
+                                        <div className="absolute left-4 top-4 sm:left-6 sm:top-6">
+                                            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/70 bg-white/90 px-3.5 py-2 text-xs font-bold text-[#a86f42] shadow-lg shadow-black/5 backdrop-blur-md sm:px-4">
+                                                <Sparkles size={13} />
+                                                {waffle.tag}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* Image counter */}
+                                    {galleryImages.length > 1 && (
+                                        <div className="absolute bottom-4 right-4 rounded-full border border-white/50 bg-black/30 px-3 py-1.5 text-[11px] font-semibold text-white backdrop-blur-md sm:bottom-6 sm:right-6">
+                                            {activeImage + 1} /{" "}
+                                            {galleryImages.length}
+                                        </div>
+                                    )}
+
+                                    {/* Previous button */}
+                                    {galleryImages.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={previousImage}
+                                            aria-label="Previous image"
+                                            className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/60 bg-white/90 text-[#2a1b14] shadow-lg backdrop-blur-md transition duration-300 hover:scale-105 hover:bg-white active:scale-95 sm:left-5 sm:h-11 sm:w-11"
+                                        >
+                                            <ChevronLeft size={19} />
+                                        </button>
+                                    )}
+
+                                    {/* Next button */}
+                                    {galleryImages.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={nextImage}
+                                            aria-label="Next image"
+                                            className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/60 bg-white/90 text-[#2a1b14] shadow-lg backdrop-blur-md transition duration-300 hover:scale-105 hover:bg-white active:scale-95 sm:right-5 sm:h-11 sm:w-11"
+                                        >
+                                            <ChevronRight size={19} />
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Thumbnails */}
+
+                                {galleryImages.length > 1 && (
+                                    <div className="mt-4 grid grid-cols-4 gap-2.5 sm:mt-5 sm:gap-3">
+                                        {galleryImages.map((image, index) => (
+                                            <button
+                                                key={`${image}-${index}`}
+                                                type="button"
+                                                onClick={() =>
+                                                    setActiveImage(index)
+                                                }
+                                                aria-label={`View image ${index + 1
+                                                    }`}
+                                                className={`group relative aspect-square overflow-hidden rounded-2xl border-2 bg-[#f5eadf] transition duration-300 ${activeImage === index
+                                                        ? "border-[#a86f42] shadow-[0_8px_20px_rgba(168,111,66,0.15)]"
+                                                        : "border-transparent hover:border-[#d9c4b3]"
+                                                    }`}
+                                            >
+                                                <img
+                                                    src={image}
+                                                    alt={`${waffle.name} ${index + 1
+                                                        }`}
+                                                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                                                />
+
+                                                {activeImage === index && (
+                                                    <span className="absolute inset-0 bg-[#a86f42]/10" />
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
-                        {/* =================================================
-                RIGHT: PRODUCT INFORMATION
-            ================================================= */}
-                        <div className="flex flex-col">
-                            <span className="section-label">
-                                {waffle.category}
-                            </span>
+                        {/* =====================================
+                            PRODUCT INFORMATION
+                        ===================================== */}
 
-                            <h1 className="mt-3 text-3xl font-bold tracking-[-0.035em] text-[var(--heading)] sm:text-4xl">
+                        <div className="flex w-full flex-col lg:pt-5">
+                            {/* Category */}
+
+                            <div className="inline-flex w-fit items-center gap-2 rounded-full bg-[#f7c873]/15 px-3.5 py-1.5">
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#c08b45]" />
+
+                                <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#a86f42]">
+                                    {waffle.category}
+                                </span>
+                            </div>
+
+                            {/* Product name */}
+
+                            <h1 className="mt-4 max-w-2xl text-[2.35rem] font-bold leading-[1.08] tracking-[-0.045em] text-[#2a1b14] sm:text-5xl lg:text-[3.4rem]">
                                 {waffle.name}
                             </h1>
 
-                            {/* Rating */}
-                            <div className="mt-4 flex flex-wrap items-center gap-3">
-                                <div className="flex items-center gap-1.5 rounded-lg bg-[var(--accent-soft)] px-3 py-1.5">
-                                    <Star
-                                        size={15}
-                                        className="fill-[var(--accent)] text-[var(--accent)]"
-                                    />
+                            {/* Description */}
 
-                                    <span className="text-sm font-bold text-[var(--heading)]">
-                                        {waffle.rating}
-                                    </span>
-                                </div>
-
-                                <span className="text-sm text-[var(--muted)]">
-                                    {waffle.reviews} verified reviews
-                                </span>
-
-                                <span className="h-1 w-1 rounded-full bg-[var(--border)]" />
-
-                                <span className="text-sm font-medium text-green-600">
-                                    In Stock
-                                </span>
-                            </div>
-
-                            <div className="my-6 h-px bg-[var(--border)]" />
-
-                            {/* Price */}
-                            <div className="flex flex-wrap items-end gap-3">
-                                <span className="text-3xl font-bold text-[var(--heading)]">
-                                    ₹{finalPrice.toLocaleString("en-IN")}
-                                </span>
-
-                                <span className="mb-1 text-base text-[var(--muted)] line-through">
-                                    ₹{finalOldPrice.toLocaleString("en-IN")}
-                                </span>
-
-                                <span className="mb-1 rounded-md bg-[var(--primary-soft)] px-2 py-1 text-xs font-bold text-[var(--primary)]">
-                                    {discount}% OFF
-                                </span>
-                            </div>
-
-                            <p className="mt-2 text-xs text-[var(--muted)]">
-                                Price updates automatically according to selected weight.
+                            <p className="mt-5 max-w-xl text-[15px] leading-7 text-[#765f52] sm:text-base sm:leading-8">
+                                {waffle.description}
                             </p>
 
-                            {/* =================================================
-                  WEIGHT
-              ================================================= */}
-                            <div className="mt-7">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-sm font-bold text-[var(--heading)]">
-                                        Select Weight
-                                    </h2>
+                            {/* Divider */}
 
-                                    <span className="text-xs text-[var(--muted)]">
-                                        Required
+                            <div className="my-7 h-px w-full bg-[#eadfd6] sm:my-8" />
+
+                            {/* Price */}
+
+                            <div className="flex flex-wrap items-end gap-x-3 gap-y-2">
+                                <span className="text-3xl font-bold tracking-tight text-[#2a1b14] sm:text-4xl">
+                                    ₹{waffle.price.toLocaleString("en-IN")}
+                                </span>
+
+                                {waffle.oldPrice && (
+                                    <span className="mb-1 text-sm font-medium text-[#a18b7c] line-through sm:text-base">
+                                        ₹
+                                        {waffle.oldPrice.toLocaleString(
+                                            "en-IN"
+                                        )}
                                     </span>
-                                </div>
+                                )}
 
-                                <div className="mt-3 grid grid-cols-4 gap-2">
-                                    {weights.map((weight) => {
-                                        const selected =
-                                            selectedWeight.label === weight.label;
-
-                                        return (
-                                            <button
-                                                key={weight.label}
-                                                type="button"
-                                                onClick={() => setSelectedWeight(weight)}
-                                                className={`rounded-xl border px-3 py-3 text-sm font-semibold transition ${selected
-                                                        ? "border-[var(--primary)] bg-[var(--primary-soft)] text-[var(--primary)]"
-                                                        : "border-[var(--border)] bg-white text-[var(--heading)] hover:border-[var(--primary)]"
-                                                    }`}
-                                            >
-                                                {weight.label}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
+                                {discount && (
+                                    <span className="mb-1 rounded-lg bg-[#f7c873]/25 px-2.5 py-1 text-[11px] font-extrabold tracking-wide text-[#93632e]">
+                                        {discount}% OFF
+                                    </span>
+                                )}
                             </div>
 
-                            {/* =================================================
-                  FLAVOR
-              ================================================= */}
-                            <div className="mt-7">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-sm font-bold text-[var(--heading)]">
-                                        Choose Flavor
-                                    </h2>
+                            {/* Availability */}
 
-                                    <span className="text-xs text-[var(--muted)]">
-                                        Required
-                                    </span>
-                                </div>
+                            <div className="mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-[#edf7eb] px-3 py-1.5">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#65a95b] opacity-50" />
+                                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[#5b9c51]" />
+                                </span>
 
-                                <div className="mt-3 flex flex-wrap gap-2">
-                                    {flavors.map((flavor) => {
-                                        const selected = selectedFlavor === flavor;
-
-                                        return (
-                                            <button
-                                                key={flavor}
-                                                type="button"
-                                                onClick={() => setSelectedFlavor(flavor)}
-                                                className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition ${selected
-                                                        ? "border-[var(--primary)] bg-[var(--primary-soft)] text-[var(--primary)]"
-                                                        : "border-[var(--border)] bg-white text-[var(--heading)] hover:border-[var(--primary)]"
-                                                    }`}
-                                            >
-                                                {flavor}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
+                                <span className="text-xs font-bold text-[#4d8847]">
+                                    Available to order
+                                </span>
                             </div>
 
-                            {/* =================================================
-                  CUSTOM MESSAGE
-              ================================================= */}
-                            <div className="mt-7">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-sm font-bold text-[var(--heading)]">
-                                        Special Message
-                                    </h2>
+                            {/* Order card */}
 
-                                    <span className="text-xs text-[var(--muted)]">
-                                        Optional
-                                    </span>
-                                </div>
-
-                                <textarea
-                                    value={message}
-                                    onChange={(e) => setMessage(e.target.value)}
-                                    maxLength={100}
-                                    rows={3}
-                                    placeholder="e.g. Happy Birthday Ayesha!"
-                                    className="mt-3 w-full resize-none rounded-xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--heading)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--primary)]"
-                                />
-
-                                <div className="mt-1 flex justify-end">
-                                    <span className="text-[11px] text-[var(--muted)]">
-                                        {message.length}/100
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* =================================================
-                  QUANTITY + CART
-              ================================================= */}
-                            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                                <div className="flex h-13 items-center justify-between rounded-xl border border-[var(--border)] bg-white px-2 sm:w-36">
-                                    <button
-                                        type="button"
-                                        onClick={decreaseQuantity}
-                                        disabled={quantity === 1}
-                                        className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--heading)] transition hover:bg-[var(--primary-soft)] hover:text-[var(--primary)] disabled:cursor-not-allowed disabled:opacity-40"
-                                    >
-                                        <Minus size={16} />
-                                    </button>
-
-                                    <span className="text-sm font-bold text-[var(--heading)]">
-                                        {quantity}
-                                    </span>
-
-                                    <button
-                                        type="button"
-                                        onClick={increaseQuantity}
-                                        className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--heading)] transition hover:bg-[var(--primary-soft)] hover:text-[var(--primary)]"
-                                    >
-                                        <Plus size={16} />
-                                    </button>
-                                </div>
-
+                            <div className="mt-8 rounded-[26px] border border-[#eadfd6] bg-white p-4 shadow-[0_14px_40px_rgba(91,55,35,0.06)] sm:p-5">
                                 <button
                                     type="button"
-                                    onClick={addToCart}
-                                    className="flex h-13 flex-1 items-center justify-center gap-2 rounded-xl border border-[var(--primary)] bg-[var(--primary-soft)] px-6 text-sm font-bold text-[var(--primary)] transition hover:bg-[var(--primary)] hover:text-white"
+                                    onClick={handleWhatsAppOrder}
+                                    className="group flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-[#a86f42] px-6 text-sm font-bold text-white shadow-[0_12px_28px_rgba(168,111,66,0.22)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#925e36] hover:shadow-[0_16px_32px_rgba(168,111,66,0.27)] active:translate-y-0"
                                 >
-                                    <ShoppingBag size={18} />
-                                    Add to Cart
+                                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 transition group-hover:bg-white/20">
+                                        <MessageCircle size={18} />
+                                    </span>
+
+                                    <span>Order on WhatsApp</span>
                                 </button>
-                            </div>
 
-                            <button
-                                type="button"
-                                onClick={() => { addToCart(); window.location.href = "/checkout"; }}
-                                className="mt-3 flex h-13 w-full items-center justify-center rounded-xl bg-[var(--primary)] px-6 text-sm font-bold text-white shadow-lg shadow-[var(--mainglow)] transition hover:bg-[var(--primary-dark)]"
-                            >
-                                Buy Now
-                            </button>
-
-                            {/* =================================================
-                  DELIVERY INFO
-              ================================================= */}
-                            <div className="mt-7 grid gap-3 sm:grid-cols-3">
-                                <div className="rounded-xl border border-[var(--border)] bg-white p-4">
-                                    <Truck
-                                        size={19}
-                                        className="text-[var(--primary)]"
+                                <div className="mt-3 flex items-start gap-2 px-1">
+                                    <MessageCircle
+                                        size={14}
+                                        className="mt-0.5 shrink-0 text-[#a88a75]"
                                     />
 
-                                    <p className="mt-2 text-xs font-bold text-[var(--heading)]">
-                                        Fresh Delivery
-                                    </p>
-
-                                    <p className="mt-1 text-[11px] leading-5 text-[var(--muted)]">
-                                        Delivered fresh to your door.
-                                    </p>
-                                </div>
-
-                                <div className="rounded-xl border border-[var(--border)] bg-white p-4">
-                                    <Clock3
-                                        size={19}
-                                        className="text-[var(--primary)]"
-                                    />
-
-                                    <p className="mt-2 text-xs font-bold text-[var(--heading)]">
-                                        Choose Time
-                                    </p>
-
-                                    <p className="mt-1 text-[11px] leading-5 text-[var(--muted)]">
-                                        Select your preferred delivery slot.
-                                    </p>
-                                </div>
-
-                                <div className="rounded-xl border border-[var(--border)] bg-white p-4">
-                                    <ShieldCheck
-                                        size={19}
-                                        className="text-[var(--primary)]"
-                                    />
-
-                                    <p className="mt-2 text-xs font-bold text-[var(--heading)]">
-                                        Secure Payment
-                                    </p>
-
-                                    <p className="mt-1 text-[11px] leading-5 text-[var(--muted)]">
-                                        Safe and secure checkout.
+                                    <p className="text-xs leading-5 text-[#8a7162]">
+                                        Send your order directly to Huffle
+                                        Waffles on WhatsApp.
                                     </p>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    {/* =====================================================
-              PRODUCT INFORMATION
-          ===================================================== */}
-                    <div className="mt-20 border-t border-[var(--border)] pt-14">
-                        <div className="grid gap-12 lg:grid-cols-[1.4fr_0.8fr]">
-                            <div>
-                                <span className="section-label">
-                                    Product details
-                                </span>
+                            {/* Small trust points */}
 
-                                <h2 className="section-title">
-                                    Made for your <span>special moments</span>
-                                </h2>
+                            <div className="mt-6 grid grid-cols-2 gap-3">
+                                <div className="rounded-2xl border border-[#eadfd6] bg-white/60 px-4 py-3.5">
+                                    <p className="text-xs font-bold text-[#4c392f]">
+                                        Freshly Prepared
+                                    </p>
+                                    <p className="mt-1 text-[11px] leading-4 text-[#927c6d]">
+                                        Made fresh for your order
+                                    </p>
+                                </div>
 
-                                <p className="mt-5 max-w-3xl text-sm leading-7 text-[var(--muted)] sm:text-base">
-                                    Our products are freshly prepared using carefully selected
-                                    ingredients and crafted with attention to every detail.
-                                    Whether you're celebrating a birthday, anniversary or just
-                                    treating yourself, this waffle is made to make the moment a
-                                    little sweeter.
-                                </p>
-
-                                <div className="mt-7 space-y-4">
-                                    {[
-                                        "Freshly baked using quality ingredients",
-                                        "Customizable weight and flavor",
-                                        "Personalized message available",
-                                        "Carefully packed for delivery",
-                                    ].map((item) => (
-                                        <div
-                                            key={item}
-                                            className="flex items-center gap-3"
-                                        >
-                                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--primary-soft)]">
-                                                <Check
-                                                    size={15}
-                                                    className="text-[var(--primary)]"
-                                                />
-                                            </span>
-
-                                            <span className="text-sm font-medium text-[var(--heading)]">
-                                                {item}
-                                            </span>
-                                        </div>
-                                    ))}
+                                <div className="rounded-2xl border border-[#eadfd6] bg-white/60 px-4 py-3.5">
+                                    <p className="text-xs font-bold text-[#4c392f]">
+                                        Easy Ordering
+                                    </p>
+                                    <p className="mt-1 text-[11px] leading-4 text-[#927c6d]">
+                                        Order directly on WhatsApp
+                                    </p>
                                 </div>
                             </div>
-
-                            {/* Quick Info */}
-                            <div className="rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--section-soft)] p-6">
-                                <h3 className="text-lg font-bold text-[var(--heading)]">
-                                    waffle information
-                                </h3>
-
-                                <div className="mt-5 divide-y divide-[var(--border)]">
-                                    <div className="flex justify-between py-4 text-sm">
-                                        <span className="text-[var(--muted)]">
-                                            Category
-                                        </span>
-
-                                        <span className="font-semibold text-[var(--heading)]">
-                                            {waffle.category}
-                                        </span>
-                                    </div>
-
-                                    <div className="flex justify-between py-4 text-sm">
-                                        <span className="text-[var(--muted)]">
-                                            Selected Weight
-                                        </span>
-
-                                        <span className="font-semibold text-[var(--heading)]">
-                                            {selectedWeight.label}
-                                        </span>
-                                    </div>
-
-                                    <div className="flex justify-between py-4 text-sm">
-                                        <span className="text-[var(--muted)]">
-                                            Flavor
-                                        </span>
-
-                                        <span className="font-semibold text-[var(--heading)]">
-                                            {selectedFlavor}
-                                        </span>
-                                    </div>
-
-                                    <div className="flex justify-between py-4 text-sm">
-                                        <span className="text-[var(--muted)]">
-                                            Preparation
-                                        </span>
-
-                                        <span className="font-semibold text-[var(--heading)]">
-                                            Freshly baked
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* =====================================================
-              RELATED products
-          ===================================================== */}
-                    <div className="mt-20 border-t border-[var(--border)] pt-14">
-                        <div className="flex items-end justify-between gap-5">
-                            <div>
-                                <span className="section-label">
-                                    You may also like
-                                </span>
-
-                                <h2 className="section-title">
-                                    More delicious <span>products</span>
-                                </h2>
-                            </div>
-
-                            <Link
-                                href="/products"
-                                className="hidden text-sm font-semibold text-[var(--primary)] sm:flex sm:items-center sm:gap-1"
-                            >
-                                View all
-                                <ChevronRight size={16} />
-                            </Link>
-                        </div>
-
-                        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                            {products
-                                .filter((item) => item.id !== waffle.id)
-                                .slice(0, 4)
-                                .map((item) => (
-                                    <Link
-                                        href={`/products/${item.id}`}
-                                        key={item.id}
-                                        className="group overflow-hidden rounded-[var(--radius-card)] border border-[var(--border)] bg-white transition hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(45,32,34,0.10)]"
-                                    >
-                                        <div className="aspect-square overflow-hidden bg-[var(--section-soft)]">
-                                            <img
-                                                src={item.image}
-                                                alt={item.name}
-                                                className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                                            />
-                                        </div>
-
-                                        <div className="p-4">
-                                            <span className="text-xs font-medium text-[var(--primary)]">
-                                                {item.category}
-                                            </span>
-
-                                            <h3 className="mt-1 line-clamp-1 text-sm font-semibold text-[var(--heading)]">
-                                                {item.name}
-                                            </h3>
-
-                                            <div className="mt-3 flex items-center justify-between">
-                                                <span className="font-bold text-[var(--heading)]">
-                                                    ₹{item.price.toLocaleString("en-IN")}
-                                                </span>
-
-                                                <span className="flex items-center gap-1 text-xs text-[var(--muted)]">
-                                                    <Star
-                                                        size={13}
-                                                        className="fill-[var(--accent)] text-[var(--accent)]"
-                                                    />
-                                                    {item.rating}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                ))}
                         </div>
                     </div>
                 </div>
             </section>
+
+            {/* =========================================
+                MOBILE BOTTOM ORDER BAR
+            ========================================= */}
+
+            <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#eadfd6] bg-[#fffaf4]/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-10px_35px_rgba(42,27,20,0.08)] backdrop-blur-xl lg:hidden">
+                <button
+                    type="button"
+                    onClick={handleWhatsAppOrder}
+                    className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#a86f42] px-4 text-sm font-bold text-white shadow-[0_8px_22px_rgba(168,111,66,0.2)] transition active:scale-[0.99]"
+                >
+                    <MessageCircle size={18} />
+
+                    <span className="truncate">
+                        Order {waffle.name} • ₹
+                        {waffle.price.toLocaleString("en-IN")}
+                    </span>
+                </button>
+            </div>
+
+            {/* Bottom spacing for mobile sticky CTA */}
+
+            <div className="h-20 lg:hidden" />
         </main>
     );
 }

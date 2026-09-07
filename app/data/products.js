@@ -10,6 +10,7 @@ const products = [
         oldPrice: 50,
         tag: "Popular",
         image: "/kitkat-delight.png",
+        imagesarr: ["/kitkat-delight.png", "/2.jpg"],
         description: "Crispy waffle topped with creamy chocolate, KitKat pieces, and sweet drizzle.",
     },
     {
@@ -21,6 +22,7 @@ const products = [
         oldPrice: 50,
         tag: "Popular",
         image: "/dark-chocolate.png",
+        imagesarr: ["/dark-chocolate.png", "/1.jpg"],
         description: "Rich dark chocolate waffle topped with smooth chocolate sauce and indulgent drizzle.",
     },
     
